@@ -1,0 +1,8 @@
+REACT_APP_API_KEY=AIzaSyChnr3bTrEp-56uTYdsI5VemH4DA8BgPlw
+REACT_APP_DATABASE_URL=https://functions-tests-5ba2b-default-rtdb.firebaseio.com
+REACT_APP_AUTH_DOMAIN=functions-tests-5ba2b.firebaseapp.com
+REACT_APP_PROJECTID=functions-tests-5ba2b
+REACT_APP_STORAGEBUCKET=functions-tests-5ba2b.appspot.com
+REACT_APP_MESSAGER_ID=453125847842
+REACT_APP_ID=1:453125847842:web:1a8639b66081f2e4df437b
+REACT_APP_MEASUREMENT_ID=G-1GXPEZ8Y9V
