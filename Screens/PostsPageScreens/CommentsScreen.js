@@ -18,24 +18,24 @@ const CommentsScreen = ({ navigation, route: { params } }) => {
   const [comments, setComment] = useState([
     {
       autorAvatar: "",
-      comment: "Comment 1sknnn",
-      date: "09 червня, 2020 | 08:40",
+      comment: "Comment 1n",
+      date: "09 червня, 2021 | 08:40",
     },
     {
       autorAvatar: "",
-      comment: "Comment 2sknnn",
-      date: "09 червня, 2020 | 08:40",
+      comment: "Comment 2",
+      date: "09 червня, 2023 | 18:45",
     },
     {
       autorAvatar: "",
-      comment: "Comment 3sknnn",
-      date: "09 червня, 2020 | 08:40",
+      comment: "Comment 3n",
+      date: "09 червня, 2024 | 08:40",
     },
   ]);
 
   useEffect(() => {
     if (isFocused) {
-      navigation?.getParent("home")?.setOptions({
+      navigation?.getParent("Home")?.setOptions({
         tabBarStyle: { display: "none" },
         headerShown: false,
       });
@@ -43,7 +43,7 @@ const CommentsScreen = ({ navigation, route: { params } }) => {
   }, []);
 
   const handleAddComment = () => {
-    if (!commentText.trim())
+    if (!commentText || !commentText.trim())
       return console.warn("Будь ласка напишіть коментар");
     const data = {
       autorAvatar: "",

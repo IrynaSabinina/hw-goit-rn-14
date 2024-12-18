@@ -7,9 +7,25 @@ import { TouchableOpacity } from "react-native";
 
 import backgroundImg from "../../assets/img/background.jpg";
 import SvgAddButton from "../../assets/svg/SvgAddButton";
+import { useSelector } from "react-redux";
+import { selectLogin, selectUserId } from "../../redux/auth/authSelectors";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../../firebase/config";
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
   const [avatar, setAvatar] = useState(null);
+  const name = useSelector(selectLogin);
+  const uid = useSelector(selectUserId);
+
+  // const onLoadAvatar = async () => {
+  //   const avatarImg = await DocumentPicker.getDocumentAsync({
+  //     type: "image/*",
+  //   });
+
+  //   if (avatarImg.type === "cancel") return setAvatar(null);
+
+  //   setAvatar(avatarImg);
+  // };
 
   const onLoadAvatar = async () => {
     const avatarImg = await DocumentPicker.getDocumentAsync({
@@ -19,6 +35,25 @@ const ProfileScreen = () => {
     if (avatarImg.type === "cancel") return setAvatar(null);
 
     setAvatar(avatarImg);
+    // const uniquePostId = email + Date.now().toString();
+    const uniquePostId = uid;
+    if (avatarImg) {
+      try {
+        const response = await fetch(avatarImg);
+
+        const file = await response.blob();
+
+        const imageRef = await ref(storage, `avatars/${uniquePostId}`);
+
+        await uploadBytes(imageRef, file);
+
+        const downloadURL = await getDownloadURL(imageRef);
+        await uploadImageToServer(downloadURL, "avatars", uid);
+        // return downloadURL;
+      } catch (error) {
+        console.warn("uploadImageToServer: ", error);
+      }
+    }
   };
 
   return (
@@ -38,7 +73,7 @@ const ProfileScreen = () => {
               />
             </TouchableOpacity>
           </View>
-          <Text style={{ ...styles.title, marginTop: 92 }}>Name</Text>
+          <Text style={{ ...styles.title, marginTop: 92 }}>{name}</Text>
         </View>
       </View>
     </ImageBackground>

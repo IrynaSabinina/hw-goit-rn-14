@@ -1,7 +1,7 @@
 import { createStackNavigator } from "@react-navigation/stack";
-import StartPostsScreen from "../MainScreens/StartPostsScreen";
-import CommentsScreen from "../MainScreens/CommentsScreen";
-import MapScreen from "../MainScreens/MapScreen";
+import StartPostsScreen from "../PostsPageScreens/StartPostsScreen";
+import CommentsScreen from "../PostsPageScreens/CommentsScreen";
+import MapScreen from "../PostsPageScreens/MapScreen";
 import { StyleSheet } from "react-native";
 import SvgArrowLeft from "../../assets/svg/SvgArrowLeft";
 
@@ -10,10 +10,13 @@ const NestedScreen = createStackNavigator();
 const PostsScreen = ({ navigation }) => {
   return (
     <NestedScreen.Navigator
-      initialRouteName="DefaultPosts"
+      initialRouteName="StartPostsScreen"
       screenOptions={{ headerShown: false }}
     >
-      <NestedScreen.Screen name="DefaultPosts" component={StartPostsScreen} />
+      <NestedScreen.Screen
+        name="StartPostsScreen"
+        component={StartPostsScreen}
+      />
       <NestedScreen.Screen
         name="Comments"
         component={CommentsScreen}
@@ -82,6 +85,7 @@ const screenOptions = {
     fontWeight: "bold",
     fontSize: 17,
     lineHeight: 22,
+
     textAlign: "center",
   },
 };

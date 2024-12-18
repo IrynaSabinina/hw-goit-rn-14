@@ -8,16 +8,27 @@ import {
 import { Text, View } from "react-native";
 
 import { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import {
+  selectAvatar,
+  selectEmail,
+  selectLogin,
+} from "../../redux/auth/authSelectors";
 import PostsItem from "../components/Post/PostsItem";
+import { db } from "../../firebase/config";
 
 const StartPostsScreen = ({ route }) => {
+  const avatar = useSelector(selectAvatar);
+  const login = useSelector(selectLogin);
+  const email = useSelector(selectEmail);
+
   const [posts, setPosts] = useState([
     {
       id: "ksdlflsdnfsldjnfdjfsjdkfn",
       postImg:
         "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252Fgoit-react-native-hw-05-dbed3e8b-5429-4e6e-a6ba-fefe43283569/Camera/1609f830-6073-4560-8596-6f26f450b3a3.jpg",
-      postName: "олл",
-      postAddress: "Ucraine",
+      postName: "LOL",
+      postAddress: "Somhere",
       postLocation: { latitude: 48.383022, longitude: 31.1828699 },
     },
   ]);
@@ -31,10 +42,10 @@ const StartPostsScreen = ({ route }) => {
   return (
     <View style={styles.container}>
       <View style={styles.avatarWrapper}>
-        <Image style={styles.avatarImg} />
+        <Image style={styles.avatarImg} source={avatar} />
         <View>
-          <Text style={styles.avatarName}>Natali Romanova</Text>
-          <Text style={styles.avatarEmail}>email@example.com</Text>
+          <Text style={styles.avatarName}>{login}</Text>
+          <Text style={styles.avatarEmail}>{email}</Text>
         </View>
       </View>
       <FlatList

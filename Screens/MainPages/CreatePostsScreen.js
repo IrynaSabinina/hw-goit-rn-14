@@ -91,7 +91,7 @@ const CreatePostsScreen = () => {
     console.log({ postImg, postName, postAddress, postLocation });
 
     handleKeyboardHide();
-    navigation.navigate("DefaultPosts", {
+    navigation.navigate("StartPostsScreen", {
       postImg,
       postName: postName.trim(),
       postAddress: postAddress.trim(),
@@ -110,6 +110,20 @@ const CreatePostsScreen = () => {
         console.log("Error > ", error.message);
       }
     }
+
+    // if (!cameraRef && postImg) {
+    //   try {
+    //     const avatarImg = await DocumentPicker.getDocumentAsync({
+    //       type: 'image/*',
+    //     });
+
+    //     if (avatarImg.type === 'cancel') return setPostImg('');
+
+    //     setPostImg(avatarImg);
+    //   } catch (error) {
+    //     console.log('Error > ', error.message);
+    //   }
+    // }
     addImageLocation();
   };
 
@@ -266,9 +280,12 @@ export default CreatePostsScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
     paddingHorizontal: 16,
     paddingVertical: 32,
+
     backgroundColor: "#fff",
+
     resizeMode: "cover",
     width: Dimensions.get("window").width,
     height: Dimensions.get("window").height,
@@ -281,10 +298,13 @@ const styles = StyleSheet.create({
     position: "relative",
     alignItems: "center",
     justifyContent: "center",
+
     height: 240,
     maxHeight: 240,
     maxWidth: 342,
+
     marginBottom: 8,
+
     backgroundColor: "#F6F6F6",
     border: "1px solid #E8E8E8",
     borderRadius: 8,
@@ -293,6 +313,7 @@ const styles = StyleSheet.create({
   camera: {
     alignItems: "center",
     justifyContent: "center",
+
     height: "100%",
     width: "100%",
   },
@@ -301,6 +322,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
+    // zIndex: 99,
     flex: 1,
     height: 240,
     maxHeight: 240,
@@ -314,7 +336,9 @@ const styles = StyleSheet.create({
 
     width: 60,
     height: 60,
+
     padding: 18,
+
     color: "#bdbdbd",
     backgroundColor: "#ffffff",
     borderRadius: 50,
@@ -326,6 +350,7 @@ const styles = StyleSheet.create({
     fontWeight: 400,
     fontSize: 16,
     lineHeight: 19,
+
     color: "#BDBDBD",
   },
 
@@ -333,9 +358,12 @@ const styles = StyleSheet.create({
     position: "relative",
     height: 50,
     paddingVertical: 16,
+
     alignContent: "center",
+
     color: "#212121",
     backgroundColor: "#ffffff",
+
     borderBottomWidth: 1,
     borderColor: "#e8e8e8",
   },
@@ -353,7 +381,9 @@ const styles = StyleSheet.create({
   },
   inputLocation: {
     fontSize: 16,
+
     marginLeft: 28,
+
     color: "#212121",
     backgroundColor: "#ffffff",
   },
@@ -368,7 +398,9 @@ const styles = StyleSheet.create({
   btn: {
     marginTop: 32,
     marginBottom: 120,
+
     paddingVertical: 16,
+
     backgroundColor: "#f6f6f6",
     borderRadius: 100,
   },
@@ -377,16 +409,21 @@ const styles = StyleSheet.create({
     fontStyle: "normal",
     fontWeight: 400,
     fontSize: 16,
+
     textAlign: "center",
+
     color: "#bdbdbd",
   },
   btnTrash: {
     alignSelf: "center",
     alignItems: "center",
+
     width: 70,
     height: 40,
+
     paddingVertical: 8,
     paddingHorizontal: 8,
+
     backgroundColor: "#f6f6f6",
     borderRadius: 20,
   },
