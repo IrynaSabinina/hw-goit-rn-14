@@ -13,12 +13,23 @@ import SvgPlus from "../assets/svg/SvgPlus";
 import SvgUser from "../assets/svg/SvgUser";
 import SvgTrash from "../assets/svg/SvgTrash";
 import { useNavigation } from "@react-navigation/native";
+import { useDispatch, useSelector } from "react-redux";
+import { authSignOutUser } from "../redux/auth/authOperations";
+import { selectEmail } from "../redux/auth/authSelectors";
 
 const ButtomTabs = createBottomTabNavigator();
 
 const Home = () => {
-  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const user = useSelector(selectEmail);
 
+  console.log("home", user);
+  // const navigation = useNavigation();
+  const logOut = () => {
+    dispatch(authSignOutUser());
+    console.log("signedOut", user);
+    // navigation.navigate("Login");
+  };
   return (
     <ButtomTabs.Navigator
       id="Home"
@@ -44,7 +55,8 @@ const Home = () => {
           ...postsOptions,
           headerRight: () => (
             <SvgLogOut
-              onPress={() => navigation.navigate("Login")}
+              // onPress={() => navigation.navigate("Login")}
+              onPress={logOut}
               title="Return back"
               color="#fff"
               style={styles.logOut}

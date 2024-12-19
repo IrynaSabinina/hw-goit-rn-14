@@ -3,7 +3,10 @@ import { Dimensions, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 
-import { authSignInUser } from "../../redux/auth/authOperations";
+import {
+  authSignInUser,
+  authStateChangeUser,
+} from "../../redux/auth/authOperations";
 
 import {
   View,
@@ -18,6 +21,8 @@ import {
 } from "react-native";
 
 import backgroundImg from "../../assets/img/background.jpg";
+import { authStateChange } from "../../redux/auth/authSlice";
+import { auth } from "../../firebase/config";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
@@ -36,14 +41,46 @@ const LoginScreen = () => {
   };
 
   const onSubmitUserLogin = () => {
-    if (!email.trim() || !password.trim())
+    if (!email || !password) {
       return console.warn("Будь ласка заповніть поля");
+    }
 
-    dispatch(authSignInUser(email, password));
-    console.log({ email, password });
+    dispatch(authSignInUser(email, password)).then((data) => {
+      if (data === undefined || !data.uid) {
+        alert(`login не виконано!`);
+        return;
+      }
+      // dispatch(authStateChange({ stateChange: true }));
+    });
+    // const user = auth.currentUser;
+    // // dispatch(authStateChangeUser());
+    // console.log("login", email, user);
+    //   .then((userCredential) => {
+    //     // Signed in
+    //     console.log("signedIn");
 
+    // console.log(`user`, userCredential);
+
+    //     // ...
+    //   })
+    //   .catch((error) => {
+    //     const errorCode = error.code;
+    //     const errorMessage = error.message;
+    //   });
+    // const id = user.uid;
+    // const docRef = doc(db, "users", `${id}`);
+    // const docSnap = getDoc(docRef);
+
+    // if (docSnap.exists()) {
+    //   console.log("Document data:", docSnap.data());
+    // } else {
+    //   // docSnap.data() will be undefined in this case
+    //   console.log("No such document!");
+    // }
+    // console.log({ email, password });
+    // dispatch(authStateChange({ stateChange: true }));
     handleKeyboardHide();
-    navigation.navigate("Home", { user: { email, password } });
+    // navigation.navigate("Home", { user: { email, password } });
     clearUserForm();
   };
 

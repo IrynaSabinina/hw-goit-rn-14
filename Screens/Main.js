@@ -12,17 +12,20 @@ import { authStateChangeUser } from "../redux/auth/authOperations";
 import LoginScreen from "./Auth/LoginScreen";
 import RegistrationScreen from "./Auth/RegistrationScreen";
 import Home from "./Home";
-import { selectStateChange } from "../redux/auth/authSelectors";
+import { selectEmail, selectStateChange } from "../redux/auth/authSelectors";
 
 const MainStack = createStackNavigator();
 
 const Main = () => {
   const dispatch = useDispatch();
   const stateChange = useSelector(selectStateChange);
+  const userEmail = useSelector(selectEmail);
 
   useEffect(() => {
     dispatch(authStateChangeUser());
   }, []);
+
+  console.log("mainPage", userEmail);
   return (
     <NavigationContainer>
       {!stateChange ? (

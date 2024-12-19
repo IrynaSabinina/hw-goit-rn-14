@@ -5,7 +5,8 @@ import {
   onAuthStateChanged,
   signOut,
 } from "firebase/auth";
-import { auth } from "../../firebase/config";
+
+import { auth, db } from "../../firebase/config";
 import { updateUserProfile, authStateChange, authSignOut } from "./authSlice";
 
 export const authSignUpUser =
@@ -44,15 +45,30 @@ export const authSignUpUser =
     }
   };
 
-export const authSignInUser =
-  ({ login, email, password }) =>
-  async (dispatch, state) => {
-    try {
-      return await signInWithEmailAndPassword(login, email, password);
-    } catch (error) {
-      return error.code;
-    }
-  };
+export const authSignInUser = (email, password) => async (dispatch, state) => {
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+    const user = auth.currentUser;
+    const {
+      uid,
+      displayName,
+      email: emailBase,
+      avatar: photoUrlBase,
+    } = auth.currentUser;
+
+    const userProfile = {
+      userId: uid,
+      login: displayName,
+      email: emailBase,
+      avatar: photoUrlBase,
+    };
+
+    dispatch(updateUserProfile(userProfile));
+    return user;
+  } catch (error) {
+    return error.code;
+  }
+};
 
 export const authUpdateUser =
   ({ avatarURL }) =>

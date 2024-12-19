@@ -24,7 +24,7 @@ import SvgAddButton from "../../assets/svg/SvgAddButton";
 import { useNavigation } from "@react-navigation/native";
 import { authStateChange } from "../../redux/auth/authSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "../../firebase/config";
+import { auth, storage } from "../../firebase/config";
 
 const RegistrationScreen = () => {
   const navigation = useNavigation();
@@ -39,12 +39,12 @@ const RegistrationScreen = () => {
   const [isSecureText, setIsSecureText] = useState(true);
   const [currentFocused, setCurrentFocused] = useState("");
 
-  const clearUserForm = () => {
-    setAvatar(null);
-    setLogin(null);
-    setEmail(null);
-    setPassword(null);
-  };
+  // const clearUserForm = () => {
+  //   setAvatar(null);
+  //   setLogin(null);
+  //   setEmail(null);
+  //   setPassword(null);
+  // };
 
   const onSubmitUserRegister = async () => {
     if (!login || !email || !password)
@@ -52,6 +52,7 @@ const RegistrationScreen = () => {
 
     dispatch(authSignUpUser({ login, email, password, avatar })).then(
       (data) => {
+        console.log("data reg Prom ------>", data);
         if (data === undefined || !data.uid) {
           alert(`Реєстрацію не виконано!`);
           return;
@@ -64,7 +65,7 @@ const RegistrationScreen = () => {
       }
     );
 
-    console.log({ login, email, password, photo });
+    // console.log({ login, email, password, photo });
 
     // dispatch(authStateChange({ stateChange: true }));
 
@@ -94,6 +95,7 @@ const RegistrationScreen = () => {
     // const uniquePostId = email + Date.now().toString();
     const uniquePostId = uid;
     if (imageUri) {
+      console.log(imageUri);
       try {
         const response = await fetch(imageUri);
 
@@ -122,7 +124,8 @@ const RegistrationScreen = () => {
     setCurrentFocused("");
     Keyboard.dismiss();
   };
-
+  const user = auth.currentUser;
+  console.log("registration -------> ", user);
   return (
     <TouchableWithoutFeedback onPress={handleKeyboardHide}>
       <KeyboardAvoidingView

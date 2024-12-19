@@ -7,15 +7,19 @@ import { TouchableOpacity } from "react-native";
 
 import backgroundImg from "../../assets/img/background.jpg";
 import SvgAddButton from "../../assets/svg/SvgAddButton";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectLogin, selectUserId } from "../../redux/auth/authSelectors";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase/config";
+import { authSignOutUser } from "../../redux/auth/authOperations";
+import { useNavigation } from "@react-navigation/native";
 
-const ProfileScreen = ({ navigation }) => {
+const ProfileScreen = () => {
   const [avatar, setAvatar] = useState(null);
   const name = useSelector(selectLogin);
   const uid = useSelector(selectUserId);
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
 
   // const onLoadAvatar = async () => {
   //   const avatarImg = await DocumentPicker.getDocumentAsync({
@@ -38,6 +42,7 @@ const ProfileScreen = ({ navigation }) => {
     // const uniquePostId = email + Date.now().toString();
     const uniquePostId = uid;
     if (avatarImg) {
+      console.log(avatarImg);
       try {
         const response = await fetch(avatarImg);
 
