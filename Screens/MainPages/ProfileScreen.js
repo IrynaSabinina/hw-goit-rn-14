@@ -2,7 +2,7 @@ import { ImageBackground } from "react-native";
 import * as DocumentPicker from "expo-document-picker";
 import { StyleSheet, View, Image, Text } from "react-native";
 import { Dimensions } from "react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TouchableOpacity } from "react-native";
 
 import backgroundImg from "../../assets/img/background.jpg";
@@ -11,62 +11,63 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectLogin, selectUserId } from "../../redux/auth/authSelectors";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../../firebase/config";
-import { authSignOutUser } from "../../redux/auth/authOperations";
 import { useNavigation } from "@react-navigation/native";
+import deleteFileFromStorage from "../../helpers/deleteFileFromStorage";
+import { authStateChangeUser } from "../../redux/auth/authOperations";
+import saveImageToFirebase from "../../helpers/saveImageToFirebase";
+import getImageURLFromFirebase from "../../helpers/getImageURLFromFirebase";
 
 const ProfileScreen = () => {
   const [avatar, setAvatar] = useState(null);
   const name = useSelector(selectLogin);
   const uid = useSelector(selectUserId);
-  const navigation = useNavigation();
+
   const dispatch = useDispatch();
 
-  // const onLoadAvatar = async () => {
-  //   const avatarImg = await DocumentPicker.getDocumentAsync({
-  //     type: "image/*",
-  //   });
+  const avatarRef = ref(storage, `avatars/${uid}`);
 
-  //   if (avatarImg.type === "cancel") return setAvatar(null);
-
-  //   setAvatar(avatarImg);
-  // };
+  useEffect(() => {
+    dispatch(authStateChangeUser());
+  }, [avatar]);
 
   const onLoadAvatar = async () => {
+    deleteFileFromStorage(`avatars/${uid}`);
+
     const avatarImg = await DocumentPicker.getDocumentAsync({
       type: "image/*",
     });
 
     if (avatarImg.type === "cancel") return setAvatar(null);
 
-    setAvatar(avatarImg);
-    // const uniquePostId = email + Date.now().toString();
-    const uniquePostId = uid;
     if (avatarImg) {
-      console.log(avatarImg);
+      console.log("update avatar in Srorage Url", avatarImg);
       try {
-        const response = await fetch(avatarImg);
+        saveImageToFirebase(avatarImg.uri, "avatars", uid);
 
-        const file = await response.blob();
-
-        const imageRef = await ref(storage, `avatars/${uniquePostId}`);
-
-        await uploadBytes(imageRef, file);
-
-        const downloadURL = await getDownloadURL(imageRef);
-        await uploadImageToServer(downloadURL, "avatars", uid);
-        // return downloadURL;
+        setAvatar(getImageURLFromFirebase("avatars", uid));
       } catch (error) {
         console.warn("uploadImageToServer: ", error);
       }
     }
   };
-
+  getDownloadURL(avatarRef)
+    .then((url) => {
+      if (url) {
+        console.log(url);
+        setAvatar(url);
+      }
+    })
+    .catch((error) => {
+      setAvatar(
+        "https://firebasestorage.googleapis.com/v0/b/functions-tests-5ba2b.appspot.com/o/avatars%2Fdefault.jpg?alt=media&token=04ef4786-4f85-482a-91c1-125e5ef47345"
+      );
+    });
   return (
     <ImageBackground source={backgroundImg} style={styles.bgContainer}>
       <View>
         <View style={styles.contentWrapper}>
           <View style={styles.avatarWrapper}>
-            <Image style={styles.avatar} source={avatar} />
+            <Image style={styles.avatar} source={{ uri: avatar }} />
             <TouchableOpacity
               style={avatar ? styles.btnAddAvatarLoad : styles.btnAddAvatar}
               onPress={onLoadAvatar}

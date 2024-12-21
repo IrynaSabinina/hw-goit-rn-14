@@ -19,23 +19,18 @@ export const authSignUpUser =
 
       await updateProfile(user, {
         displayName: login,
-        avatar: photo,
+        photoURL: photo,
       });
       // await updateProfile(user, {
       //         displayName: login,
       //         avatar: photo,});
-      const {
-        uid,
-        displayName,
-        email: emailBase,
-        avatar: photoUrlBase,
-      } = auth.currentUser;
+      const { uid, displayName, email: emailBase, photoURL } = auth.currentUser;
 
       const userProfile = {
         userId: uid,
         login: displayName,
         email: emailBase,
-        avatar: photoUrlBase,
+        avatar: photoURL,
       };
 
       dispatch(updateUserProfile(userProfile));
@@ -46,21 +41,17 @@ export const authSignUpUser =
   };
 
 export const authSignInUser = (email, password) => async (dispatch, state) => {
+  console.log("oper---------->", email);
   try {
     await signInWithEmailAndPassword(auth, email, password);
     const user = auth.currentUser;
-    const {
-      uid,
-      displayName,
-      email: emailBase,
-      avatar: photoUrlBase,
-    } = auth.currentUser;
+    const { uid, displayName, email: emailBase, photoURL } = auth.currentUser;
 
     const userProfile = {
       userId: uid,
       login: displayName,
       email: emailBase,
-      avatar: photoUrlBase,
+      avatar: photoURL,
     };
 
     dispatch(updateUserProfile(userProfile));

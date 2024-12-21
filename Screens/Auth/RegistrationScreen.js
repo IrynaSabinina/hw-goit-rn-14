@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import { Dimensions, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -22,9 +22,13 @@ import {
 import backgroundImg from "../../assets/img/background.jpg";
 import SvgAddButton from "../../assets/svg/SvgAddButton";
 import { useNavigation } from "@react-navigation/native";
-import { authStateChange } from "../../redux/auth/authSlice";
+import { authStateChange, updateUserProfile } from "../../redux/auth/authSlice";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { auth, storage } from "../../firebase/config";
+import saveImageToFirebase from "../../helpers/saveImageToFirebase";
+import getImageURLFromFirebase from "../../helpers/getImageURLFromFirebase";
+import { selectAvatar } from "../../redux/auth/authSelectors";
+import { updateProfile } from "firebase/auth";
 
 const RegistrationScreen = () => {
   const navigation = useNavigation();
@@ -39,39 +43,26 @@ const RegistrationScreen = () => {
   const [isSecureText, setIsSecureText] = useState(true);
   const [currentFocused, setCurrentFocused] = useState("");
 
-  // const clearUserForm = () => {
-  //   setAvatar(null);
-  //   setLogin(null);
-  //   setEmail(null);
-  //   setPassword(null);
-  // };
-
   const onSubmitUserRegister = async () => {
     if (!login || !email || !password)
       return console.warn("Будь ласка заповніть поля");
+    console.log("avatar", avatar);
 
     dispatch(authSignUpUser({ login, email, password, avatar })).then(
       (data) => {
-        console.log("data reg Prom ------>", data);
         if (data === undefined || !data.uid) {
           alert(`Реєстрацію не виконано!`);
           return;
         }
+        saveImageToFirebase(avatar, "avatars", data.uid);
         dispatch(authStateChange({ stateChange: true }));
-        const photo = avatar
-          ? uploadImageToServer(avatar, "avatars", data.uid)
-          : "https://firebasestorage.googleapis.com/v0/b/functions-tests-5ba2b.appspot.com/o/public%2FKjVW9rRIB8Xmr8rpDHZQtxIxcot1%2Favatar.png?alt=media&token=d2da15d4-6112-4fd1-960c-5a7ce39258c6";
-        console.log(data);
+        setAvatar(getImageURLFromFirebase("avatars", data.uid));
       }
     );
 
-    // console.log({ login, email, password, photo });
-
-    // dispatch(authStateChange({ stateChange: true }));
-
-    // navigation.navigate("Home", { user: { login, email, password } });
-    // handleKeyboardHide();
-    // clearUserForm();
+    updateProfile(auth.currentUser, {
+      photoURL: avatar,
+    });
   };
 
   const onLoadAvatar = async () => {
@@ -91,28 +82,28 @@ const RegistrationScreen = () => {
     }
   };
 
-  const uploadImageToServer = async (imageUri, prefixFolder, uid) => {
-    // const uniquePostId = email + Date.now().toString();
-    const uniquePostId = uid;
-    if (imageUri) {
-      console.log(imageUri);
-      try {
-        const response = await fetch(imageUri);
+  // const uploadImageToServer = async (imageUri, prefixFolder, uid) => {
+  //   // const uniquePostId = email + Date.now().toString();
 
-        const file = await response.blob();
+  //   if (imageUri) {
+  //     // console.log(imageUri);
+  //     try {
+  //       const response = await fetch(imageUri);
 
-        const imageRef = await ref(storage, `${prefixFolder}/${uniquePostId}`);
+  //       const file = await response.blob();
 
-        await uploadBytes(imageRef, file);
+  //       const imageRef = await ref(storage, `${prefixFolder}/${uid}`);
 
-        const downloadURL = await getDownloadURL(imageRef);
+  //       await uploadBytes(imageRef, file);
 
-        return downloadURL;
-      } catch (error) {
-        console.warn("uploadImageToServer: ", error);
-      }
-    }
-  };
+  //       const downloadURL = await getDownloadURL(imageRef);
+
+  //       return downloadURL;
+  //     } catch (error) {
+  //       console.warn("uploadImageToServer: ", error);
+  //     }
+  //   }
+  // };
 
   const handleFocus = (currentFocusInput = "") => {
     setIsShowKeyboard(true);
@@ -135,7 +126,10 @@ const RegistrationScreen = () => {
         <ImageBackground source={backgroundImg} style={styles.bgContainer}>
           <View style={styles.contentWrapper}>
             <View style={styles.avatarWrapper}>
-              <Image style={styles.avatar} source={{ uri: avatar }} />
+              <Image
+                style={styles.avatar}
+                source={{ uri: avatar } ? { uri: avatar } : avatar}
+              />
               <TouchableOpacity
                 style={avatar ? styles.btnAddAvatarLoad : styles.btnAddAvatar}
                 onPress={onLoadAvatar}

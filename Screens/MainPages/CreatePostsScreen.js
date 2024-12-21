@@ -3,6 +3,7 @@ import { useNavigation, useIsFocused } from "@react-navigation/native";
 
 import { Camera } from "expo-camera";
 import * as MediaLibrary from "expo-media-library";
+import { doc, setDoc } from "firebase/firestore";
 
 import * as Location from "expo-location";
 
@@ -26,6 +27,11 @@ import {
 import SvgTrash from "../../assets/svg/SvgTrash";
 import SvgLocation from "../../assets/svg/SvgLocation";
 import SvgLoadPost from "../../assets/svg/SvgLoadPosts";
+import { db } from "../../firebase/config";
+import { useSelector } from "react-redux";
+import { selectUserId } from "../../redux/auth/authSelectors";
+import saveImageToFirebase from "../../helpers/saveImageToFirebase";
+import getImageURLFromFirebase from "../../helpers/getImageURLFromFirebase";
 
 const CreatePostsScreen = () => {
   const navigation = useNavigation();
@@ -41,6 +47,7 @@ const CreatePostsScreen = () => {
 
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [currentFocused, setCurrentFocused] = useState("");
+  const user = useSelector(selectUserId);
 
   useEffect(() => {
     setPostImg("");
@@ -89,7 +96,6 @@ const CreatePostsScreen = () => {
       return console.warn("Будь ласка завантажте фото та заповніть поля");
 
     console.log({ postImg, postName, postAddress, postLocation });
-
     handleKeyboardHide();
     navigation.navigate("StartPostsScreen", {
       postImg,
@@ -97,7 +103,18 @@ const CreatePostsScreen = () => {
       postAddress: postAddress.trim(),
       postLocation,
     });
+    addPostToFirestore();
+
     clearForm();
+  };
+
+  const addPostToFirestore = async () => {
+    await setDoc(doc(db, "users", `${user}/posts/${postName}`), {
+      // postImg: postImg,
+      postName: postName,
+      postAddress: postAddress,
+      postLocation: postLocation,
+    });
   };
 
   const onLoadPostImg = async () => {
@@ -106,11 +123,17 @@ const CreatePostsScreen = () => {
         const { uri } = await cameraRef.takePictureAsync();
         await MediaLibrary.createAssetAsync(uri);
         setPostImg(uri);
+        saveImageToFirebase(uri, `posts/${user}`, postName);
       } catch (error) {
         console.log("Error > ", error.message);
       }
     }
 
+    // const postImageFromStorage = await getImageURLFromFirebase(
+    //   `posts/${user}`,
+    //   postName
+    // );
+    // setPostImg(postImageFromStorage);
     // if (!cameraRef && postImg) {
     //   try {
     //     const avatarImg = await DocumentPicker.getDocumentAsync({

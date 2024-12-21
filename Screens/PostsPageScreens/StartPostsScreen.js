@@ -13,36 +13,58 @@ import {
   selectAvatar,
   selectEmail,
   selectLogin,
+  selectUserId,
 } from "../../redux/auth/authSelectors";
 import PostsItem from "../components/Post/PostsItem";
-import { db } from "../../firebase/config";
+import { db, storage } from "../../firebase/config";
+import { getDownloadURL, ref } from "firebase/storage";
+import getAllUserPosts from "../../helpers/getAllUserPosts";
 
 const StartPostsScreen = ({ route }) => {
-  const avatar = useSelector(selectAvatar);
+  const [avatar, setAvatar] = useState(useSelector(selectAvatar));
   const login = useSelector(selectLogin);
   const email = useSelector(selectEmail);
+  const uid = useSelector(selectUserId);
 
-  const [posts, setPosts] = useState([
-    {
-      id: "ksdlflsdnfsldjnfdjfsjdkfn",
-      postImg:
-        "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252Fgoit-react-native-hw-05-dbed3e8b-5429-4e6e-a6ba-fefe43283569/Camera/1609f830-6073-4560-8596-6f26f450b3a3.jpg",
-      postName: "LOL",
-      postAddress: "Somhere",
-      postLocation: { latitude: 48.383022, longitude: 31.1828699 },
-    },
-  ]);
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
-    if (!route.params) return;
+    const fetchPosts = async () => {
+      // Fetch posts using the helper function
+      const userPosts = await getAllUserPosts(uid);
+      setPosts(userPosts);
+    };
+    if (uid) {
+      fetchPosts(); // Fetch posts only if userId is available
+    }
+  }, [uid, posts.lenght]);
 
-    setPosts((prev) => [...prev, route.params]);
-  }, [route.params]);
+  useEffect(
+    () => {
+      if (!route.params) return;
+    },
+    [route.params],
+    avatar
+  );
+  const avatarRef = ref(storage, `avatars/${uid}`);
+  getDownloadURL(avatarRef)
+    .then((url) => {
+      if (url) {
+        console.log(url);
+        setAvatar(url);
+      }
+    })
+    .catch((error) => {
+      setAvatar(
+        "https://firebasestorage.googleapis.com/v0/b/functions-tests-5ba2b.appspot.com/o/avatars%2Fdefault.jpg?alt=media&token=04ef4786-4f85-482a-91c1-125e5ef47345"
+      );
+    });
+  /// Firestore posts
 
   return (
     <View style={styles.container}>
       <View style={styles.avatarWrapper}>
-        <Image style={styles.avatarImg} source={avatar} />
+        <Image style={styles.avatarImg} source={{ uri: avatar }} />
         <View>
           <Text style={styles.avatarName}>{login}</Text>
           <Text style={styles.avatarEmail}>{email}</Text>
@@ -59,7 +81,7 @@ const StartPostsScreen = ({ route }) => {
             postLocation={item.postLocation}
           />
         )}
-        keyExtractor={(item, idx) => idx.toString()}
+        keyExtractor={(item) => item.id.toString()}
       />
       <View style={styles.navTabs}></View>
     </View>

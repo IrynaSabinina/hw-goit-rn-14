@@ -50,37 +50,10 @@ const LoginScreen = () => {
         alert(`login не виконано!`);
         return;
       }
-      // dispatch(authStateChange({ stateChange: true }));
+      dispatch();
     });
-    // const user = auth.currentUser;
-    // // dispatch(authStateChangeUser());
-    // console.log("login", email, user);
-    //   .then((userCredential) => {
-    //     // Signed in
-    //     console.log("signedIn");
 
-    // console.log(`user`, userCredential);
-
-    //     // ...
-    //   })
-    //   .catch((error) => {
-    //     const errorCode = error.code;
-    //     const errorMessage = error.message;
-    //   });
-    // const id = user.uid;
-    // const docRef = doc(db, "users", `${id}`);
-    // const docSnap = getDoc(docRef);
-
-    // if (docSnap.exists()) {
-    //   console.log("Document data:", docSnap.data());
-    // } else {
-    //   // docSnap.data() will be undefined in this case
-    //   console.log("No such document!");
-    // }
-    // console.log({ email, password });
-    // dispatch(authStateChange({ stateChange: true }));
     handleKeyboardHide();
-    // navigation.navigate("Home", { user: { email, password } });
     clearUserForm();
   };
 
